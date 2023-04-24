@@ -1,0 +1,12 @@
+{
+    "configurations": [
+        {
+            "type": "python",
+            "name": "django",
+            "file": "manage.py",
+            "arguments": ["runserver", "0.0.0.0:8000"],
+            
+        },
+
+    ]
+}

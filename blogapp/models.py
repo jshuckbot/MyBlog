@@ -12,10 +12,9 @@ class Post(models.Model):
 
     def __str__(self):
         return self.title
-    
-    class Meta:
-        ordering = ['-publish']
-        indexes = [
-            models.Index(fields=['-publish']),
-        ]
 
+    class Meta:
+        ordering = ["-publish"]
+        indexes = [
+            models.Index(fields=["-publish"]),
+        ]

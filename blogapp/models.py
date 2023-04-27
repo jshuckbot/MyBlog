@@ -22,9 +22,6 @@ class Post(models.Model):
     updated = models.DateTimeField(auto_now=True)
     status = models.CharField(max_length=2, choices=Status.choices, default=Status.DRAFT)
 
-    def __str__(self):
-        return self.title
-
     objects = models.Manager()  # Менеджер применяемый по умолчанию
     published = PublishedManager()  # Конкретно-прикладной менеджер
 
@@ -33,3 +30,6 @@ class Post(models.Model):
         indexes = [
             models.Index(fields=["-publish"]),
         ]
+
+    def __str__(self):
+        return self.title

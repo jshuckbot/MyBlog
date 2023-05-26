@@ -1,9 +1,10 @@
 from django.core.mail import send_mail
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.shortcuts import get_object_or_404, render
+from django.views.decorators.http import require_POST
 from django.views.generic import ListView
 
-from blogapp.forms import EmailPostForm
+from blogapp.forms import CommentForm, EmailPostForm
 from blogapp.models import Post
 
 
@@ -58,4 +59,23 @@ def post_detail(request, year, month, day, post):
     post = get_object_or_404(
         Post, status=Post.Status.PUBLISHED, slug=post, publish__year=year, publish__month=month, publish__day=day
     )
-    return render(request, "blogapp/post/detail.html", {"post": post})
+    comments = post.comments.filter(active=True)
+    form = CommentForm()
+    return render(request, "blogapp/post/detail.html", {"post": post, "comments": comments, "form": form})
+
+
+@require_POST
+def post_comment(request, post_id):
+    post = get_object_or_404(Post, id=post_id, status=Post.Status.PUBLISHED)
+
+    comment = None
+    form = CommentForm(data=request.POST)
+    if form.is_valid():
+        #  Создать объект класса Comment, не сохраняя его в БД
+        comment = form.save(commit=False)
+        # Назначить пост к комментарию
+        comment.post = post
+        # Сохранить комментарий в бд
+        comment.save()
+
+    return render(request, "blogapp/post/comment.html", {"post": post, "form": form, "comment": comment})

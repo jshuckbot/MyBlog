@@ -3,6 +3,7 @@ from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.shortcuts import get_object_or_404, render
 from django.views.decorators.http import require_POST
 from django.views.generic import ListView
+from taggit.models import Tag
 
 from blogapp.forms import CommentForm, EmailPostForm
 from blogapp.models import Post
@@ -40,8 +41,12 @@ class PostListView(ListView):
     template_name = "blogapp/post/list.html"
 
 
-def post_list(request):
+def post_list(request, tag_slug=None):
     postlist = Post.published.all()
+    tag = None
+    if tag_slug:
+        tag = get_object_or_404(Tag, slug=tag_slug)
+        postlist = postlist.filter(tags__in=[tag])
     # Постраничная разбивка с 3 постами на страницу
     paginator = Paginator(postlist, 3)
     page_number = request.GET.get("page", 1)
@@ -52,7 +57,7 @@ def post_list(request):
         posts = paginator.page(paginator.num_pages)
     except PageNotAnInteger:
         posts = paginator.page(1)
-    return render(request, "blogapp/post/list.html", {"posts": posts})
+    return render(request, "blogapp/post/list.html", {"posts": posts, "tag": tag})
 
 
 def post_detail(request, year, month, day, post):

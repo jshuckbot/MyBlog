@@ -14,3 +14,7 @@ class CommentForm(forms.ModelForm):
     class Meta:
         model = blogapp_models.Comment
         fields = ["name", "email", "body"]
+
+
+class SearchForm(forms.Form):
+    query = forms.CharField()
